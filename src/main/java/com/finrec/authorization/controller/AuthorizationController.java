@@ -1,28 +1,29 @@
 package com.finrec.authorization.controller;
 
+import com.finrec.authorization.dto.AuthorizationRequest;
+import com.finrec.authorization.dto.AuthorizationResponse;
+import com.finrec.authorization.service.PolicyEvaluationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.finrec.authorization.service.AuthorizationService;
-
-import java.util.Map;
 
 @RestController
-@RequestMapping("/authorization")
+@RequestMapping("/api/v1")
 public class AuthorizationController {
 
-    private final AuthorizationService authService;
+    private final PolicyEvaluationService policyEvaluationService;
 
-    public AuthorizationController(AuthorizationService authService) {
-        this.authService = authService;
+    public AuthorizationController(PolicyEvaluationService policyEvaluationService) {
+        this.policyEvaluationService = policyEvaluationService;
     }
 
     @PostMapping("/authorize")
-    public ResponseEntity<?> authorize(@RequestBody Map<String, String> request) {
-        String token = request.get("token");
-        String resource = request.get("resource");
-        String action = request.get("action");
+    public ResponseEntity<AuthorizationResponse> authorize(@RequestBody AuthorizationRequest request) {
+        boolean isAllowed = policyEvaluationService.evaluate(request);
 
-        boolean allowed = authService.authorize(token, resource, action);
-        return ResponseEntity.ok(Map.of("allowed", allowed));
+        if (isAllowed) {
+            return ResponseEntity.ok(new AuthorizationResponse(true, "Access Granted"));
+        } else {
+            return ResponseEntity.ok(new AuthorizationResponse(false, "Policy Violation: Insufficient Permissions"));
+        }
     }
 }

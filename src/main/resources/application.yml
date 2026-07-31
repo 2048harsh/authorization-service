@@ -1,5 +1,2 @@
 server:
   port: 8082   # Run authorization service on its own port
-
-auth:
-  public-key-url: http://localhost:8080/auth/public-key   # Authentication service endpoint
