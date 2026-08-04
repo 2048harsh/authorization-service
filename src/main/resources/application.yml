@@ -1,2 +1,6 @@
+spring:
+  application:
+    name: authorization-service
+
 server:
-  port: 8082   # Run authorization service on its own port
+  port: 8082

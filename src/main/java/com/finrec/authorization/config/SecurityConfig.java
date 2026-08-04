@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -15,7 +16,9 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
 				// Disable CSRF for REST APIs
-				.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth
+				.csrf(AbstractHttpConfigurer::disable)
+	            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(auth -> auth
 						// Permit internal policy evaluation calls from Gateway
 						.requestMatchers("/api/v1/authorize").permitAll()
 						// Require auth for any other endpoints if present
